@@ -1,0 +1,145 @@
+Below is an outline of the RESTful API endpoints that we could create, grouped by resource. Each group covers both “list and detail” endpoints for clients (and, where needed, CRUD endpoints for administrative use). Note that for tables whose names change per Bible translation (the _books and _verses tables), we include the translation abbreviation in the URL so that the backend can determine which table to query.
+
+---
+
+## Translations Endpoints
+
+These endpoints allow clients to discover the available Bible translations and retrieve metadata about each.
+
+- **GET** `/api/translations`  
+  *Description:* Retrieve a list of all available Bible translations.  
+  *Response:* An array of translation objects (abbreviation, title, license, etc.).
+
+- **GET** `/api/translations/{translation}`  
+  *Description:* Retrieve detailed metadata for a single translation (by its abbreviation).  
+  *Path Parameter:*  
+    - `translation` – The Bible translation abbreviation (e.g., "NIV", "ESV").
+
+- *(Optional, Admin-only)* **POST** `/api/translations`  
+  *Description:* Create a new translation entry.
+
+- *(Optional, Admin-only)* **PUT** `/api/translations/{translation}`  
+  *Description:* Update information for an existing translation.
+
+- *(Optional, Admin-only)* **DELETE** `/api/translations/{translation}`  
+  *Description:* Delete a translation entry.
+
+---
+
+## Books Endpoints
+
+These endpoints serve book data for a given Bible translation.
+
+- **GET** `/api/{translation}/books`  
+  *Description:* Retrieve a list of all books in the specified Bible translation.  
+  *Path Parameter:*  
+    - `translation` – The translation abbreviation.
+
+- **GET** `/api/{translation}/books/{book_id}`  
+  *Description:* Retrieve details of a specific book (e.g., its name) by ID.  
+  *Path Parameters:*  
+    - `translation` – The translation abbreviation.  
+    - `book_id` – The unique identifier of the book.
+
+---
+
+## Verses Endpoints
+
+These endpoints deliver Bible verses. There are a couple of ways to query verses, either directly by ID or by filtering with book, chapter, and verse numbers.
+
+- **GET** `/api/{translation}/verses`  
+  *Description:* Retrieve verses in the specified translation, with optional filtering.  
+  *Path Parameter:*  
+    - `translation` – The translation abbreviation.  
+  *Query Parameters:*  
+    - `book_id` (optional) – Filter by book.  
+    - `chapter` (optional) – Filter by chapter.  
+    - `verse` (optional) – Filter by verse number.  
+    - *(Optional)* `limit`/`offset` for pagination.
+
+- **GET** `/api/{translation}/verses/{id}`  
+  *Description:* Retrieve the details of a specific verse using its unique ID.  
+  *Path Parameters:*  
+    - `translation` – The translation abbreviation.  
+    - `id` – The verse ID.
+
+- **GET** `/api/{translation}/books/{book_id}/chapters/{chapter}/verses`  
+  *Description:* Retrieve all verses for a specific chapter within a given book, providing a more human-friendly endpoint.  
+  *Path Parameters:*  
+    - `translation` – The translation abbreviation.  
+    - `book_id` – The unique identifier of the book (or you can support book short code/name).  
+    - `chapter` – The chapter number.
+
+---
+
+## Cross References Endpoints
+
+These endpoints allow users to discover, add, or manage cross-reference data between verses. Voting on cross-references may also be supported.
+
+- **GET** `/api/cross-references`  
+  *Description:* Retrieve a list of all cross references.  
+  *Query Parameters (optional):*  
+    - `from_book` – Filter by originating book.  
+    - `from_chapter` – Filter by originating chapter.  
+    - `from_verse` – Filter by originating verse.  
+    - `to_book` – Filter by referenced book.  
+    - `to_chapter` – Filter by referenced chapter.  
+    - `to_verse_start` and `to_verse_end` – To filter a range.  
+    - `min_votes` – Optionally filter by popularity.
+
+- **GET** `/api/cross-references/{id}`  
+  *Description:* Retrieve details for a specific cross reference by its unique ID.
+
+---
+
+## Web Application Routes
+
+While the core of our service is the API, the web application built on top of it will likely use some of these endpoints via AJAX/Fetch calls. In addition, our web server might render server-side pages for key routes. For example:
+
+- **GET** `/`  
+  *Description:* Homepage that might list featured translations and allow users to navigate to specific books or verses.
+
+- **GET** `/{translation}/books`  
+  *Description:* View listing for all books in the chosen Bible translation.
+
+- **GET** `/{translation}/books/{book_id}`  
+  *Description:* Detailed view of a book, including a navigation of chapters.
+
+- **GET** `/{translation}/books/{book_id}/chapters/{chapter}`  
+  *Description:* View for all verses in a given chapter.
+
+- **GET** `/{translation}/verses/{id}`  
+  *Description:* A page displaying the verse text along with any cross references.
+
+- **GET** `/cross-references`  
+  *Description:* A page listing cross references (with filtering and voting options).
+
+These web routes would call the corresponding API endpoints to fetch the necessary data.
+
+---
+
+## Summary
+
+The suggested API endpoints are:
+
+1. **Translations**  
+   - `GET /api/translations`  
+   - `GET /api/translations/{translation}`  
+
+2. **Books (per translation)**  
+   - `GET /api/{translation}/books`  
+   - `GET /api/{translation}/books/{book_id}`  
+
+3. **Verses (per translation)**  
+   - `GET /api/{translation}/verses` with optional filters  
+   - `GET /api/{translation}/verses/{id}`  
+   - `GET /api/{translation}/books/{book_id}/chapters/{chapter}/verses`  
+
+4. **Cross References**  
+   - `GET /api/cross-references` with optional filters  
+   - `GET /api/cross-references/{id}`  
+
+5. **Web Application Routes**  
+   - Home page and pages for books, chapters, verses, and cross references (which will use the API endpoints)
+
+This set of endpoints forms the backbone for the Bible API and the accompanying web application. Clients (or the web application) can perform lookups by translation, book, chapter, and verse, while also enabling features like cross-referencing and community votes on those references.
