@@ -65,6 +65,14 @@ export default async function ProtectedPage() {
                 <a href="/api/ASV/books/1" target="_blank" className="text-sm text-primary hover:underline">ASV Genesis →</a>
               </div>
             </div>
+            <div>
+              <h3 className="font-semibold mb-2">Get Book Verses</h3>
+              <code className="block bg-muted p-2 rounded">GET /api/[translation]/books/[book_id]/verses?page=1&pageSize=50</code>
+              <div className="mt-2 space-x-2">
+                <a href="/api/KJV/books/1/verses?page=1&pageSize=50" target="_blank" className="text-sm text-primary hover:underline">KJV Genesis Verses →</a>
+                <a href="/api/ASV/books/1/verses?page=1&pageSize=50" target="_blank" className="text-sm text-primary hover:underline">ASV Genesis Verses →</a>
+              </div>
+            </div>
           </div>
         </div>
 

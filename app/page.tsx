@@ -80,6 +80,35 @@ export default async function APIPage() {
             ],
           },
         },
+        {
+          method: "GET",
+          path: "/api/{translation}/books/{book_id}/verses",
+          description: "Retrieve all verses for a specific book with pagination",
+          parameters: {
+            path: [
+              {
+                name: "translation",
+                description: "The translation abbreviation",
+              },
+              {
+                name: "book_id",
+                description: "The unique identifier of the book",
+              },
+            ],
+            query: [
+              {
+                name: "page",
+                description: "Page number (default: 1)",
+                optional: true,
+              },
+              {
+                name: "pageSize",
+                description: "Number of verses per page (default: 50, max: 100)",
+                optional: true,
+              },
+            ],
+          },
+        },
       ],
     },
     {
