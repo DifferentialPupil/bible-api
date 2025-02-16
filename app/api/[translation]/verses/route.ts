@@ -3,9 +3,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { translation: string } }
+  { params }: { params: Promise<{ translation: string }> }
 ) {
   try {
+    const { translation } = await params;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const pageSize = parseInt(searchParams.get("pageSize") || "10");
@@ -26,7 +27,7 @@ export async function GET(
     }
 
     const supabase = await createClient();
-    const tableName = `${params.translation}_verses`;
+    const tableName = `${translation}_verses`;
 
     // Calculate offset
     const offset = (page - 1) * pageSize;

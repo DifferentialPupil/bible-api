@@ -3,13 +3,14 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { translation: string; id: string } }
+  { params }: { params: Promise<{ translation: string; id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const { translation, id } = await params;
+    const idInt = parseInt(id);
 
     // Validate ID parameter
-    if (isNaN(id) || id < 1) {
+    if (isNaN(idInt) || idInt < 1) {
       return NextResponse.json(
         { error: "Invalid ID parameter" },
         { status: 400 }
@@ -17,7 +18,7 @@ export async function GET(
     }
 
     const supabase = await createClient();
-    const tableName = `${params.translation}_verses`;
+    const tableName = `${translation}_verses`;
 
     const { data, error } = await supabase
       .from(tableName)

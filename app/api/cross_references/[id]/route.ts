@@ -3,13 +3,14 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const { id } = await params;
+    const idInt = parseInt(id);
 
     // Validate ID parameter
-    if (isNaN(id) || id < 1) {
+    if (isNaN(idInt) || idInt < 1) {
       return NextResponse.json(
         { error: "Invalid ID parameter" },
         { status: 400 }
@@ -21,7 +22,7 @@ export async function GET(
     const { data, error } = await supabase
       .from("cross_references")
       .select("*")
-      .eq("id", id)
+      .eq("id", idInt)
       .single();
 
     if (error) {

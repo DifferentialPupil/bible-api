@@ -3,15 +3,16 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { translation: string } }
+  { params }: { params: Promise<{ translation: string }> }
 ) {
   try {
+    const { translation } = await params;
     const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("translations")
       .select("*")
-      .eq("translation", params.translation)
+      .eq("translation", translation)
       .single();
 
     if (error) {

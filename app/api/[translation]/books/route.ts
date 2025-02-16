@@ -3,13 +3,14 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { translation: string } }
+  { params }: { params: Promise<{ translation: string }> }
 ) {
   try {
+    const { translation } = await params;
     const supabase = await createClient();
 
     const { data, error } = await supabase
-      .from(`${params.translation}_books`)
+      .from(`${translation}_books`)
       .select("*")
       .order("id", { ascending: true });
 

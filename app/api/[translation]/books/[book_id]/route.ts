@@ -3,10 +3,11 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { translation: string; book_id: string } }
+  { params }: { params: Promise<{ translation: string; book_id: string }> }
 ) {
   try {
-    const bookId = parseInt(params.book_id);
+    const { translation, book_id } = await params;
+    const bookId = parseInt(book_id);
 
     // Validate book_id parameter
     if (isNaN(bookId) || bookId < 1) {
@@ -19,7 +20,7 @@ export async function GET(
     const supabase = await createClient();
 
     const { data, error } = await supabase
-      .from(`${params.translation}_books`)
+      .from(`${translation}_books`)
       .select("*")
       .eq("id", bookId)
       .single();
